@@ -706,7 +706,6 @@ waktu_log = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 # REKOMENDASI & KEPUTUSAN AI (ALERT INFORMATIF)
 # ==========================================
 st.markdown("---")
-st.subheader("🤖 Rekomendasi & Keputusan AI:")
 
 if kelembapan_tanah > 70 or prediksi_cuaca in ["Gerimis/Hujan Ringan", "Hujan Lebat"]:
     st.info("💡 **KEPUTUSAN AI:** TUTUP SALURAN AIR 🛑 — *Tindakan efisiensi cerdas dilakukan karena lahan sudah cukup basah atau terdeteksi hujan.*")
