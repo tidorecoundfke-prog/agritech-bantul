@@ -683,14 +683,72 @@ if len(st.session_state.historis) >= 2:
         else:
             val = df_historis["Suhu Udara (°C)"].iloc[-1]
             st.info(f"Suhu stabil di {val:.1f}°C — grafik tampil saat ada perubahan data.")
+# ==========================================
+# REKOMENDASI & KEPUTUSAN AI (ALERT INFORMATIF)
+# ==========================================
+st.markdown("---")
+st.subheader("🤖 Rekomendasi & Keputusan AI:")
+
+if kelembapan_tanah > 70 or prediksi_cuaca in ["Gerimis/Hujan Ringan", "Hujan Lebat"]:
+    st.info("💡 **KEPUTUSAN AI:** TUTUP SALURAN AIR 🛑 — *Tindakan efisiensi cerdas dilakukan karena lahan sudah cukup basah atau terdeteksi hujan.*")
+    status_sekarang = "TUTUP SALURAN AIR 🛑"
 else:
-    st.info("📊 Grafik akan muncul setelah data terkumpul minimal 2 titik (tunggu refresh berikutnya).")
+    st.success("💡 **KEPUTUSAN AI:** BUKA SALURAN AIR 💧 — *Lahan membutuhkan irigasi optimal.*")
+    status_sekarang = "BUKA SALURAN AIR 💧"
+
+# ==========================================
+# PEREKAM LOG OTOMATIS AI
+# ==========================================
+from datetime import datetime
+import pandas as pd
+waktu_log = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+# ==========================================
+# REKOMENDASI & KEPUTUSAN AI (ALERT INFORMATIF)
+# ==========================================
+st.markdown("---")
+st.subheader("🤖 Rekomendasi & Keputusan AI:")
+
+if kelembapan_tanah > 70 or prediksi_cuaca in ["Gerimis/Hujan Ringan", "Hujan Lebat"]:
+    st.info("💡 **KEPUTUSAN AI:** TUTUP SALURAN AIR 🛑 — *Tindakan efisiensi cerdas dilakukan karena lahan sudah cukup basah atau terdeteksi hujan.*")
+    status_sekarang = "TUTUP SALURAN AIR 🛑"
+else:
+    st.success("💡 **KEPUTUSAN AI:** BUKA SALURAN AIR 💧 — *Lahan membutuhkan irigasi optimal.*")
+    status_sekarang = "BUKA SALURAN AIR 💧"
+
+# ==========================================
+# PEREKAM LOG OTOMATIS AI
+# ==========================================
+# Inisialisasi log_ai di session state jika belum ada
+if "log_ai" not in st.session_state:
+    st.session_state.log_ai = []
+
+from datetime import datetime
+import pandas as pd
+waktu_log = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+# Catat log jika belum ada data atau keputusannya berubah
+if not st.session_state.log_ai or st.session_state.log_ai[-1]["Keputusan"] != status_sekarang:
+    st.session_state.log_ai.append({
+        "Waktu": waktu_log,
+        "Keputusan": status_sekarang,
+        "Kelembapan Lahan": f"{kelembapan_tanah}%",
+        "Cuaca": prediksi_cuaca
+    })
+
+# Tampilkan Expander Tabel Riwayat Log
+with st.expander("📜 Riwayat & Log Keputusan Otomatis AI", expanded=False):
+    if st.session_state.log_ai:
+        df_log_ai = pd.DataFrame(st.session_state.log_ai)
+        st.dataframe(df_log_ai.iloc[::-1], use_container_width=True)
+    else:
+        st.caption("Belum ada riwayat keputusan otomatis yang tercatat.")
 
 st.markdown("---")
 
-# ============================================================
-# 7. AUTO-REFRESH
-# ============================================================
+# =======================================================================
+# # 7. AUTO-REFRESH
+# =======================================================================
 st.caption("🔄 Data cuaca & sensor diperbarui otomatis setiap 15 detik")
+import time
 time.sleep(15)
 st.rerun()
